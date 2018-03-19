@@ -1,0 +1,57 @@
+TEMPLATE=templates/eisvogel.latex
+LANG=en-GB
+CLASS=article
+SOURCES_DIR=sources
+EXAMPLE_DIR=example
+BUILD_DIR=build
+BIBLIO:=biblio.bib
+FILENAME_WITHOUT_EXTENSION=document
+MD_FILE:=${FILENAME_WITHOUT_EXTENSION}.md
+TEX_FILE=${FILENAME_WITHOUT_EXTENSION}.tex
+PANDOC_OPTIONS:=--number-sections --template=${TEMPLATE} -V lang=${LANG} --listings --filter pandoc-fignos --variable pagestyle=headings --variable links-as-notes=true --highlight-style=zenburn --variable biblio-style=alphabetic --variable documentclass=${CLASS} --toc --variable papersize=a4paper -f markdown -s --biblatex
+LUALATEX_OPTIONS:=--output-format=pdf --jobname ${FILENAME_WITHOUT_EXTENSION} --interaction nonstopmode --halt-on-error
+
+all : latex pdf
+example : example-build pdf
+
+install :
+	mkdir -p  pandoc build
+	wget -c https://github.com/jgm/pandoc/releases/download/2.1.2/pandoc-2.1.2-linux.tar.gz
+	tar xvzf pandoc-2.1.2-linux.tar.gz --strip-components 1 -C ./pandoc/
+	sudo pip install pandoc-fignos
+
+example-build :
+	rm -fr `pwd`/${BUILD_DIR}/images
+	ln -s `pwd`/${EXAMPLE_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
+	ln -s `pwd`/${EXAMPLE_DIR}/images `pwd`/${BUILD_DIR}/images
+	PATH=./pandoc/bin:$$PATH; pandoc ${EXAMPLE_DIR}/${MD_FILE} ${PANDOC_OPTIONS} --bibliography ${BIBLIO} -o ${BUILD_DIR}/${TEX_FILE}
+
+latex :
+	rm -fr `pwd`/${BUILD_DIR}/images
+	ln -s `pwd`/${SOURCES_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
+	ln -s `pwd`/${SOURCES_DIR}/images `pwd`/${BUILD_DIR}/images
+	PATH=./pandoc/bin:$$PATH; pandoc ${SOURCES_DIR}/${MD_FILE} ${PANDOC_OPTIONS} --bibliography ${BIBLIO} -o ${BUILD_DIR}/${TEX_FILE}
+
+pdf :
+	(cd ${BUILD_DIR} && lualatex ${LUALATEX_OPTIONS} ${TEX_FILE})
+	(cd ${BUILD_DIR} && biber ${FILENAME_WITHOUT_EXTENSION})
+	(cd ${BUILD_DIR} && lualatex ${LUALATEX_OPTIONS} ${TEX_FILE} )
+
+print :
+	(cd ${BUILD_DIR} && cat ${TEX_FILE})
+	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf)
+
+clean :
+	rm -fr build/*
+
+dockerimage :
+	docker rmi nnynn/pandocker || true
+	(cd docker && docker build -t nnynn/pandocker .)
+
+dockerbuild:
+	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/pandocker /bin/sh -c "(cd latex && make all && chmod -R 777 ${BUILD_DIR})"
+	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf)
+
+dockerexample :
+	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/pandocker /bin/sh -c "(cd latex && make example && chmod -R 777 ${BUILD_DIR})"
+	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf)
