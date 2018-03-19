@@ -5,5 +5,6 @@ RUN apt-get update && apt-get install -y wget \
 		&& tar xvzf pandoc-2.1.2-linux.tar.gz --strip-components 1 -C /usr \
 		&& chmod +x /usr/bin/pandoc \
 		&& chmod +x /usr/bin/pandoc-citeproc
-
-RUN apt-get -y install python-pip &&  pip install pandoc-fignos
+		
+RUN apt-get install -y python-pip &&  pip install pandoc-fignos
+RUN apt-get install -y inkscape

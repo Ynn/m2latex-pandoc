@@ -12,6 +12,8 @@ titlepage-rule-color: 0065bd
 titlepage-rule-height: 15
 ---
 
+![](images/LaTeX_logo.svg)
+
 # Pandoc with citeproc-hs
 
 -   [@nonexistent]

@@ -8,7 +8,7 @@ BIBLIO:=biblio.bib
 FILENAME_WITHOUT_EXTENSION=document
 MD_FILE:=${FILENAME_WITHOUT_EXTENSION}.md
 TEX_FILE=${FILENAME_WITHOUT_EXTENSION}.tex
-PANDOC_OPTIONS:=--number-sections --template=${TEMPLATE} -V lang=${LANG} --listings --filter pandoc-fignos --variable pagestyle=headings --variable links-as-notes=true --highlight-style=zenburn --variable biblio-style=alphabetic --variable documentclass=${CLASS} --toc --variable papersize=a4paper -f markdown -s --biblatex
+PANDOC_OPTIONS:= --number-sections  -V lang=${LANG} --listings --filter pandoc-fignos --variable pagestyle=headings --variable links-as-notes=true --highlight-style=zenburn --variable biblio-style=alphabetic --variable documentclass=${CLASS} --toc --variable papersize=a4paper -f markdown -s --biblatex
 LUALATEX_OPTIONS:=--output-format=pdf --jobname ${FILENAME_WITHOUT_EXTENSION} --interaction nonstopmode --halt-on-error
 
 all : latex pdf
@@ -22,15 +22,17 @@ install :
 
 example-build :
 	rm -fr `pwd`/${BUILD_DIR}/images
+	rm -fr `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${EXAMPLE_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${EXAMPLE_DIR}/images `pwd`/${BUILD_DIR}/images
-	PATH=./pandoc/bin:$$PATH; pandoc ${EXAMPLE_DIR}/${MD_FILE} ${PANDOC_OPTIONS} --bibliography ${BIBLIO} -o ${BUILD_DIR}/${TEX_FILE}
+	PATH=./pandoc/bin:$$PATH; (cd ${EXAMPLE_DIR} && pandoc ${MD_FILE} ${PANDOC_OPTIONS} --filter=../filters/pandoc-svg.py --template=../${TEMPLATE} --bibliography ${BIBLIO} -o ../${BUILD_DIR}/${TEX_FILE})
 
 latex :
 	rm -fr `pwd`/${BUILD_DIR}/images
+	rm -fr `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${SOURCES_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${SOURCES_DIR}/images `pwd`/${BUILD_DIR}/images
-	PATH=./pandoc/bin:$$PATH; pandoc ${SOURCES_DIR}/${MD_FILE} ${PANDOC_OPTIONS} --bibliography ${BIBLIO} -o ${BUILD_DIR}/${TEX_FILE}
+	PATH=./pandoc/bin:$$PATH; (cd ${SOURCES_DIR} && pandoc ${MD_FILE} ${PANDOC_OPTIONS} --filter=../filters/pandoc-svg.py --template=../${TEMPLATE} --bibliography ${BIBLIO} -o ../${BUILD_DIR}/${TEX_FILE})
 
 pdf :
 	(cd ${BUILD_DIR} && lualatex ${LUALATEX_OPTIONS} ${TEX_FILE})
