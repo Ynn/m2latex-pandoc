@@ -57,8 +57,8 @@ dockerimage :
 
 dockerbuild:
 	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/m2latex-pandoc /bin/sh -c "(cd latex && make all && chmod -R 777 ${BUILD_DIR})"
-	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf)
+	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf &)
 
 dockerexample :
 	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/m2latex-pandoc /bin/sh -c "(cd latex && make example && chmod -R 777 ${BUILD_DIR})"
-	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf)
+	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf &)

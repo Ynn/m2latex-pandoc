@@ -535,7 +535,7 @@ $endif$
 %
 \usepackage{titling}
 \title{$title$}
-\author{$for(author)$$author$$sep$, $endfor$}
+\author{$for(author)$$author.name$$sep$, $endfor$}
 
 %
 % tables
@@ -649,7 +649,7 @@ $endif$
 \lhead{$title$}
 \chead{}
 \rhead{$date$}
-\lfoot{$for(author)$$author$$sep$, $endfor$}
+\lfoot{$for(author)$$author.name$$sep$, $endfor$}
 \cfoot{}
 \rfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -668,8 +668,8 @@ $endif$
 $if(titlepage)$
 \begin{titlepage}
 \newgeometry{left=6cm}
-$if(titlepage-logo)$
-\includegraphics{$titlepage-logo$}
+$if(titlepage-top)$
+$titlepage-top$
 $endif$
 
 $if(titlepage-color)$
@@ -695,7 +695,7 @@ $if(subtitle)$
 $endif$
 \vskip 2em
 \noindent
-{\Large \textsf{\MakeUppercase{$for(author)$$author$$sep$, $endfor$}}
+{\Large \textsf{\MakeUppercase{$for(author)$$author.name$$sep$, $endfor$}}
 \vfill
 }
 
