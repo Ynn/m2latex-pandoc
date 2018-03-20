@@ -24,6 +24,7 @@ install :
 	sudo pip install pandoc-fignos
 
 example-build :
+	mkdir -p build
 	rm -fr `pwd`/${BUILD_DIR}/images
 	rm -fr `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${EXAMPLE_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
@@ -31,6 +32,7 @@ example-build :
 	PATH=./pandoc/bin:$$PATH; (cd ${EXAMPLE_DIR} && pandoc ${MD_FILE} ${PANDOC_OPTIONS} --csl={CSL_FILE} --filter=../filters/pandoc-svg.py --template=../${TEMPLATE} --bibliography ${BIBLIO} -o ../${BUILD_DIR}/${TEX_FILE})
 
 latex :
+	mkdir -p build
 	rm -fr `pwd`/${BUILD_DIR}/images
 	rm -fr `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${SOURCES_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
@@ -50,13 +52,13 @@ clean :
 	rm -fr build/*
 
 dockerimage :
-	docker rmi nnynn/pandocker || true
-	(cd docker && docker build -t nnynn/pandocker .)
+	docker rmi nnynn/m2latex-pandoc || true
+	(cd docker && docker build -t nnynn/m2latex-pandoc .)
 
 dockerbuild:
-	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/pandocker /bin/sh -c "(cd latex && make all && chmod -R 777 ${BUILD_DIR})"
+	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/m2latex-pandoc /bin/sh -c "(cd latex && make all && chmod -R 777 ${BUILD_DIR})"
 	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf)
 
 dockerexample :
-	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/pandocker /bin/sh -c "(cd latex && make example && chmod -R 777 ${BUILD_DIR})"
+	docker run --rm -v `pwd`/Makefile:/latex/Makefile -v `pwd`:/latex nnynn/m2latex-pandoc /bin/sh -c "(cd latex && make example && chmod -R 777 ${BUILD_DIR})"
 	(cd ${BUILD_DIR} && xdg-open ${FILENAME_WITHOUT_EXTENSION}.pdf)
