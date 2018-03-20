@@ -1,10 +1,13 @@
-TEMPLATE=templates/eisvogel.latex
+TEMPLATE_DIR=eisvogel
+TEMPLATE=templates/${TEMPLATE_DIR}/template.latex
+CSL_FILE=templates/${TEMPLATE_DIR}/bibliography.csl
 LANG=en-GB
 CLASS=article
 SOURCES_DIR=sources
 EXAMPLE_DIR=example
 BUILD_DIR=build
 BIBLIO:=biblio.bib
+CSL=
 FILENAME_WITHOUT_EXTENSION=document
 MD_FILE:=${FILENAME_WITHOUT_EXTENSION}.md
 TEX_FILE=${FILENAME_WITHOUT_EXTENSION}.tex
@@ -25,14 +28,14 @@ example-build :
 	rm -fr `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${EXAMPLE_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${EXAMPLE_DIR}/images `pwd`/${BUILD_DIR}/images
-	PATH=./pandoc/bin:$$PATH; (cd ${EXAMPLE_DIR} && pandoc ${MD_FILE} ${PANDOC_OPTIONS} --filter=../filters/pandoc-svg.py --template=../${TEMPLATE} --bibliography ${BIBLIO} -o ../${BUILD_DIR}/${TEX_FILE})
+	PATH=./pandoc/bin:$$PATH; (cd ${EXAMPLE_DIR} && pandoc ${MD_FILE} ${PANDOC_OPTIONS} --csl={CSL_FILE} --filter=../filters/pandoc-svg.py --template=../${TEMPLATE} --bibliography ${BIBLIO} -o ../${BUILD_DIR}/${TEX_FILE})
 
 latex :
 	rm -fr `pwd`/${BUILD_DIR}/images
 	rm -fr `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${SOURCES_DIR}/${BIBLIO} `pwd`/${BUILD_DIR}/${BIBLIO}
 	ln -s `pwd`/${SOURCES_DIR}/images `pwd`/${BUILD_DIR}/images
-	PATH=./pandoc/bin:$$PATH; (cd ${SOURCES_DIR} && pandoc ${MD_FILE} ${PANDOC_OPTIONS} --filter=../filters/pandoc-svg.py --template=../${TEMPLATE} --bibliography ${BIBLIO} -o ../${BUILD_DIR}/${TEX_FILE})
+	PATH=./pandoc/bin:$$PATH; (cd ${SOURCES_DIR} && pandoc ${MD_FILE} ${PANDOC_OPTIONS} --csl={CSL_FILE} --filter=../filters/pandoc-svg.py --template=../${TEMPLATE} --bibliography ${BIBLIO} -o ../${BUILD_DIR}/${TEX_FILE})
 
 pdf :
 	(cd ${BUILD_DIR} && lualatex ${LUALATEX_OPTIONS} ${TEX_FILE})
