@@ -1,4 +1,4 @@
-TEMPLATE_DIR=eisvogel
+TEMPLATE_DIR=ieee
 TEMPLATE=templates/${TEMPLATE_DIR}/template.latex
 CSL_FILE=templates/${TEMPLATE_DIR}/bibliography.csl
 LANG=en-GB
@@ -7,7 +7,6 @@ SOURCES_DIR=sources
 EXAMPLE_DIR=example
 BUILD_DIR=build
 BIBLIO:=biblio.bib
-CSL=
 FILENAME_WITHOUT_EXTENSION=document
 MD_FILE:=${FILENAME_WITHOUT_EXTENSION}.md
 TEX_FILE=${FILENAME_WITHOUT_EXTENSION}.tex
